@@ -1,0 +1,18 @@
+// src/controllers/{{name}}.controller.ts
+import { Request, Response } from 'express';
+
+export const getAll{{pascalCase name}} = async (req: Request, res: Response) => {
+  try {
+    return res.json({ message: 'GET all {{name}}' });
+  } catch (error: any) {
+    return res.status(500).json({ error: error.message });
+  }
+};
+
+export const create{{pascalCase name}} = async (req: Request, res: Response) => {
+  try {
+    return res.status(201).json({ message: '{{name}} created' });
+  } catch (error: any) {
+    return res.status(400).json({ error: error.message });
+  }
+};

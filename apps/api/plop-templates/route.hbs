@@ -1,0 +1,24 @@
+// src/routes/{{name}}.routes.ts
+import { Router } from 'express';
+import { 
+  getAll{{pascalCase name}}, 
+  create{{pascalCase name}} 
+} from '../controllers/{{name}}.controller';
+{{#if addValidation}}
+import { {{name}}Validator } from '../validators/{{name}}.validator';
+import { handleValidationErrors } from '../middleware/validation';
+{{/if}}
+
+const router = Router();
+
+router.get('/', getAll{{pascalCase name}});
+router.post(
+  '/',
+  {{#if addValidation}}
+  {{name}}Validator.create,
+  handleValidationErrors,
+  {{/if}}
+  create{{pascalCase name}}
+);
+
+export default router;
