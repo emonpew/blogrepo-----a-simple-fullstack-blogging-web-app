@@ -6,12 +6,13 @@ import {
 } from "../types/comment.type";
 import prisma from "../utils/prisma";
 import { error } from "console";
+import ResponseService from "../services/response.service";
 
 export const getAllComment = async (req: Request, res: Response) => {
   try {
     return res.json({ message: "GET all comment" });
   } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };
 
@@ -23,16 +24,16 @@ export const createComment = async (req: Request, res: Response) => {
       where: { id: reqBody.postId },
     });
     if (!postExist) {
-      return res.status(400).json({ error: "post not found" });
+      ResponseService.notFound(res, "post");
     }
 
     await prisma.comment.create({
       data: { ...reqBody, authorId: req.user!.id },
     });
 
-    return res.status(201).json({ message: "created successfully" });
+    return ResponseService.created(res, "comment");
   } catch (error: any) {
-    return res.status(400).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };
 
@@ -43,18 +44,19 @@ export const updateComment = async (req: Request, res: Response) => {
 
     const commentExist = await prisma.comment.findUnique({ where: { id } });
     if (!commentExist) {
-      return res.status(400).json({ error: "message not found" });
+      return ResponseService.notFound(res, "comment");
     }
     if (commentExist.authorId !== req.user!.id) {
-      return res
-        .status(400)
-        .json({ error: "not allowed to change other's comment" });
+      return ResponseService.forbidden(
+        res,
+        "not allowed to change others comment"
+      );
     }
 
     await prisma.comment.update({ data: { content }, where: { id } });
-    return res.status(200).json({ message: "comment updated successfully" });
+    return ResponseService.success(res);
   } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };
 
@@ -64,18 +66,19 @@ export const deleteComment = async (req: Request, res: Response) => {
 
     const commentExist = await prisma.comment.findUnique({ where: { id } });
     if (!commentExist) {
-      return res.status(400).json({ error: "message not found" });
+      return ResponseService.notFound(res, "comment");
     }
     if (commentExist.authorId !== req.user!.id) {
-      return res
-        .status(400)
-        .json({ error: "not allowed to delete other's comment" });
+      return ResponseService.forbidden(
+        res,
+        "not allowed to delete others comment"
+      );
     }
 
     await prisma.comment.delete({ where: { id } });
 
-    return res.status(200).json({ message: "comment deleted successfully" });
+    return ResponseService.success(res);
   } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };

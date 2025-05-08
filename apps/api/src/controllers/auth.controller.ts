@@ -5,6 +5,7 @@ import prisma from "../utils/prisma";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { JWT_EXPIRES_IN, JWT_SECRET } from "../utils/config";
+import ResponseService from "../services/response.service";
 
 const SALT_ROUND = 10;
 
@@ -17,7 +18,7 @@ export const registerController = async (req: Request, res: Response) => {
     });
 
     if (existingUser) {
-      return res.status(409).json({ error: "username already exists" });
+      return ResponseService.conflict(res, "user");
     }
 
     const hashedPassword = await bcrypt.hash(password, SALT_ROUND);
@@ -27,21 +28,11 @@ export const registerController = async (req: Request, res: Response) => {
         password: hashedPassword,
       },
     });
-    res.status(201).json({
-      message: "User registered successfully",
-    });
+    return ResponseService.created(res, "users");
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };
-
-// export const loginController = async (req: Request, res: Response) => {
-//   try {
-//     res.status(201).json({ message: "auth created" });
-//   } catch (error: any) {
-//     res.status(400).json({ error: error.message });
-//   }
-// };
 
 export const loginController = async (req: Request, res: Response) => {
   try {
@@ -54,18 +45,14 @@ export const loginController = async (req: Request, res: Response) => {
 
     // Return generic error to avoid revealing whether user exists
     if (!user) {
-      return res.status(401).json({
-        error: "Invalid credentials",
-      });
+      return ResponseService.unauthorized(res, "invalid credentials");
     }
 
     // Compare passwords
     const passwordMatch = await bcrypt.compare(password, user.password);
 
     if (!passwordMatch) {
-      return res.status(401).json({
-        error: "Invalid credentials",
-      });
+      return ResponseService.unauthorized(res, "invalid credentials");
     }
 
     // Create JWT payload (exclude sensitive data)
@@ -80,11 +67,12 @@ export const loginController = async (req: Request, res: Response) => {
     });
 
     // Return success response with token
-    res.status(200).json({
+    return res.status(200).json({
       message: "Login successful",
       token,
+      username,
     });
   } catch (error: any) {
-    res.status(400).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };

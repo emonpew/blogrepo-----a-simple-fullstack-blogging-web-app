@@ -3,6 +3,7 @@ import { Request, Response } from "express";
 import { toggleRequestBody } from "../types/like.type";
 import prisma from "../utils/prisma";
 import { error } from "console";
+import ResponseService from "../services/response.service";
 
 export const toggleLike = async (req: Request, res: Response) => {
   try {
@@ -10,7 +11,7 @@ export const toggleLike = async (req: Request, res: Response) => {
 
     const postExist = await prisma.post.findUnique({ where: { id: postId } });
     if (!postExist) {
-      return res.status(400).json({ error: "post doesn't exist" });
+      return ResponseService.notFound(res, "post");
     }
 
     const likeExist = await prisma.like.findUnique({
@@ -20,14 +21,14 @@ export const toggleLike = async (req: Request, res: Response) => {
       await prisma.like.create({
         data: { postId: postId, userId: req.user!.id },
       });
-      return res.status(200).json({ message: "like added" });
+      return ResponseService.success(res);
     } else {
       await prisma.like.delete({
         where: { userId_postId: { postId: postId, userId: req.user!.id } },
       });
-      return res.status(200).json({ message: "like removed" });
+      return ResponseService.success(res);
     }
   } catch (error: any) {
-    return res.status(400).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };

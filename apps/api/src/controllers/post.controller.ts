@@ -8,12 +8,13 @@ import prisma from "../utils/prisma";
 import { verifySlug } from "../utils/slugVerifier";
 import TagServices from "../services/tag.service";
 import tagService from "../services/tag.service";
+import ResponseService from "../services/response.service";
 
 export const getAllPost = async (req: Request, res: Response) => {
   try {
     res.json({ message: "GET all post" });
   } catch (error: any) {
-    res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };
 
@@ -21,17 +22,14 @@ export const createPost = async (req: Request, res: Response) => {
   try {
     const { tags = [], ...reqBody }: postCreateRequestBody = req.body;
     if (!verifySlug(reqBody.slug)) {
-      return res.status(400).json({ error: "invalid slug" });
+      return ResponseService.badRequest(res, "invalid slug");
     }
     const slugExist = await prisma.post.findUnique({
       where: { slug: reqBody.slug },
     });
     if (slugExist) {
-      return res.status(400).json({ error: "slug already taken" });
+      return ResponseService.conflict(res, "slug");
     }
-    // if (!req.user?.id) {
-    //   return res.status(500).json({ error: "internal server error" });
-    // }
     const post = await prisma.post.create({
       data: { authorId: req.user!.id, ...reqBody },
     });
@@ -40,9 +38,9 @@ export const createPost = async (req: Request, res: Response) => {
       await TagServices.syncPostTags(post.id, tags);
     }
 
-    return res.status(201).json({ message: "post created successfully" });
+    return ResponseService.created(res, "post");
   } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };
 
@@ -79,7 +77,7 @@ export const updatePost = async (req: Request, res: Response) => {
     }
     return res.status(200).json({ message: "updated successfully" });
   } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };
 
@@ -101,6 +99,6 @@ export const deletePost = async (req: Request, res: Response) => {
     await prisma.post.delete({ where: { id } });
     return res.status(200).json({ message: "post deleted" });
   } catch (error: any) {
-    return res.status(500).json({ error: error.message });
+    return ResponseService.internalServerError(res);
   }
 };

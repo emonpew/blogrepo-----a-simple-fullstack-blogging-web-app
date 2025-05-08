@@ -24,9 +24,9 @@ router.post(
   loginController
 );
 
-router.get("/status", authenticate, (req: Request, res: Response) => {
+router.get("/verify", authenticate, (req: Request, res: Response) => {
   res.json({
-    username: req.user?.username,
+    username: req.user!.username,
   });
 });
 
