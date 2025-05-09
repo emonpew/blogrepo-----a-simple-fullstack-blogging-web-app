@@ -25,7 +25,7 @@ export const createServer = (): Express => {
 
   app.use("/auth", authRouter);
   app.use("/user", userRouter);
-  app.use("/post", postRouter);
+  app.use("/posts", postRouter);
   app.use("/comment", commentRouter);
   app.use("/like", likeRouter);
 

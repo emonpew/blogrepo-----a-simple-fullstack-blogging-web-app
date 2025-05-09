@@ -10,17 +10,22 @@ import { AuthService } from "../services/auth.service";
 import { useRouter } from "next/navigation";
 
 interface AuthContextType {
-  username: string | null;
+  user: User | null;
   loading: boolean;
   login: (username: string, password: string) => Promise<void>;
   register: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
+interface User {
+  username: string;
+  userId: number;
+}
+
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export default function AuthProvider({ children }: { children: ReactNode }) {
-  const [username, setUsername] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const router = useRouter();
 
@@ -30,7 +35,8 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
       if (token) {
         try {
           const res = await AuthService.verifyToken(token);
-          setUsername(res.username);
+          const { username, userId } = res;
+          setUser({ username, userId });
         } catch (error) {
           localStorage.removeItem("jwtToken");
         }
@@ -43,11 +49,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
   const login = async (username: string, password: string) => {
     setLoading(true);
     try {
-      const { username: loggedInUsername } = await AuthService.login({
+      const { username: loggedInUsername, userId } = await AuthService.login({
         username,
         password,
       });
-      setUsername(loggedInUsername);
+      setUser({ username: loggedInUsername, userId });
       router.push("/");
     } finally {
       setLoading(false);
@@ -66,11 +72,11 @@ export default function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     AuthService.logout();
-    setUsername(null);
+    setUser(null);
   };
 
   const value = {
-    username,
+    user,
     loading,
     login,
     register,

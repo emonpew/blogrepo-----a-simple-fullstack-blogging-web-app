@@ -26,6 +26,7 @@ router.post(
 
 router.get("/verify", authenticate, (req: Request, res: Response) => {
   res.json({
+    userId: req.user!.id,
     username: req.user!.username,
   });
 });

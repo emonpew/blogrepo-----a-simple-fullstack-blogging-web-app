@@ -5,6 +5,7 @@ import {
   createPost,
   updatePost,
   deletePost,
+  getPost,
 } from "../controllers/post.controller";
 import { postValidator } from "../validators/post.validator";
 import { handleValidationErrors } from "../middleware/validation";
@@ -13,6 +14,7 @@ import { authenticate } from "../middleware/auth.middleware";
 const router = Router();
 
 router.get("/", getAllPost);
+router.get("/:id", getPost);
 router.post(
   "/",
   authenticate,

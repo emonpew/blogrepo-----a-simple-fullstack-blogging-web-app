@@ -6,7 +6,7 @@ import { useAuth } from "../contexts/AuthProvider";
 import { usePathname } from "next/navigation";
 
 export default function Navigation() {
-  const { username, logout, loading } = useAuth();
+  const { user, logout, loading } = useAuth();
   const pathname = usePathname();
 
   // Don't show navigation on auth pages
@@ -25,15 +25,21 @@ export default function Navigation() {
           </div>
 
           <div className="flex items-center space-x-4">
+            <Link
+              href="/posts"
+              className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
+            >
+              posts
+            </Link>
             {loading ? (
               <div className="animate-pulse h-8 w-24 bg-gray-200 rounded"></div>
-            ) : username ? (
+            ) : user ? (
               <div className="flex items-center space-x-4">
                 <Link
                   href="/profile"
                   className="text-gray-700 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium"
                 >
-                  {username}
+                  {user.username}
                 </Link>
                 <button
                   onClick={logout}

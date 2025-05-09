@@ -71,6 +71,7 @@ export const loginController = async (req: Request, res: Response) => {
       message: "Login successful",
       token,
       username,
+      userId: user.id,
     });
   } catch (error: any) {
     return ResponseService.internalServerError(res);

@@ -1,3 +1,5 @@
+// import { useRouter } from "next/navigation";
+
 // src/services/api.service.ts
 const API_URL = process.env.API_URL || "http://localhost:3001";
 
@@ -15,7 +17,56 @@ export const ApiService = {
     if (!response.ok) {
       if (response.status === 401) {
         // Token expired or invalid - redirect to login
-        window.location.href = "/login";
+        // router.push("/login");
+      }
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Request failed");
+    }
+
+    return await response.json();
+  },
+
+  async post(url: string, data: any) {
+    const token = localStorage.getItem("jwtToken");
+
+    const response = await fetch(`${API_URL}${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Token expired or invalid - redirect to login
+        // router.push("/login");
+      }
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Request failed");
+    }
+
+    return await response.json();
+  },
+
+  async put(url: string, data: any) {
+    // const router = useRouter();
+    const token = localStorage.getItem("jwtToken");
+
+    const response = await fetch(`${API_URL}${url}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      method: "PUT",
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        // Token expired or invalid - redirect to login
+        // router.push("/login");
       }
       const errorData = await response.json();
       throw new Error(errorData.message || "Request failed");
