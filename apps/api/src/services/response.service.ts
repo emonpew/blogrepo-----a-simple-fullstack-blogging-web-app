@@ -57,7 +57,7 @@ class ResponseService {
 
   // Specific Response Helpers
   static created(res: Response, item: string, data?: any) {
-    const message = `${item} already exists`;
+    const message = `${item} created successfully`;
     return this.success(res, {
       code: 201,
       message,

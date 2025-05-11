@@ -12,7 +12,82 @@ import ResponseService from "../services/response.service";
 
 export const getAllPost = async (req: Request, res: Response) => {
   try {
-    res.json({ message: "GET all post" });
+    // Parse query parameters for pagination and search
+    const page = parseInt(req.query.page as string) || 1;
+    const searchQuery = (req.query.search as string) || "";
+    const limit = 10;
+    const skip = (page - 1) * limit;
+
+    // Build the where clause for search
+    const whereClause = {
+      published: true, // Only published posts
+      ...(searchQuery && {
+        OR: [
+          { title: { contains: searchQuery } },
+          { content: { contains: searchQuery } },
+          {
+            author: {
+              username: { contains: searchQuery },
+            },
+          },
+          {
+            tags: {
+              some: {
+                tag: {
+                  name: { contains: searchQuery },
+                },
+              },
+            },
+          },
+        ],
+      }),
+    };
+
+    // Get total count of posts for pagination info
+    const totalPosts = await prisma.post.count({
+      where: whereClause,
+    });
+
+    // Get posts with pagination and optional search
+    const posts = await prisma.post.findMany({
+      where: whereClause,
+      skip,
+      take: limit,
+      orderBy: {
+        createdAt: "desc", // Newest first
+      },
+      include: {
+        author: {
+          select: {
+            id: true,
+            username: true,
+          },
+        },
+        tags: {
+          include: {
+            tag: true,
+          },
+        },
+        _count: {
+          select: {
+            comments: true,
+            likes: true,
+          },
+        },
+      },
+    });
+
+    // Return response with pagination info
+    res.json({
+      success: true,
+      data: posts,
+      pagination: {
+        total: totalPosts,
+        page,
+        limit,
+        totalPages: Math.ceil(totalPosts / limit),
+      },
+    });
   } catch (error: any) {
     return ResponseService.internalServerError(res);
   }

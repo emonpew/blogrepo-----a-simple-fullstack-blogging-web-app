@@ -1,5 +1,3 @@
-// import { useRouter } from "next/navigation";
-
 // src/services/api.service.ts
 const API_URL = process.env.API_URL || "http://localhost:3001";
 
@@ -15,10 +13,6 @@ export const ApiService = {
     });
 
     if (!response.ok) {
-      if (response.status === 401) {
-        // Token expired or invalid - redirect to login
-        // router.push("/login");
-      }
       const errorData = await response.json();
       throw new Error(errorData.message || "Request failed");
     }
@@ -39,10 +33,6 @@ export const ApiService = {
     });
 
     if (!response.ok) {
-      if (response.status === 401) {
-        // Token expired or invalid - redirect to login
-        // router.push("/login");
-      }
       const errorData = await response.json();
       throw new Error(errorData.message || "Request failed");
     }
@@ -64,10 +54,6 @@ export const ApiService = {
     });
 
     if (!response.ok) {
-      if (response.status === 401) {
-        // Token expired or invalid - redirect to login
-        // router.push("/login");
-      }
       const errorData = await response.json();
       throw new Error(errorData.message || "Request failed");
     }
