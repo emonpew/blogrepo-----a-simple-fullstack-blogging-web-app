@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { FaHeart, FaRegCommentAlt, FaRegHeart } from "react-icons/fa";
 
 interface PostType {
@@ -7,6 +8,7 @@ interface PostType {
   likes: number;
   comments: number;
   list?: boolean;
+  href: string;
 }
 
 const renderNum = (num: number) => {
@@ -28,26 +30,29 @@ export default function PostCard({
   likes,
   comments,
   list = false,
+  href,
 }: PostType) {
   return (
-    <div
-      className={`card bg-base-100 w-full ${list ? "" : "lg:w-96"} shadow-sm`}
-    >
-      <div className="card-body">
-        <div className="card-title line-clamp-1">{title}</div>
-        <p className="line-clamp-3">{content}</p>
+    <Link href={href} className={`w-full  ${list ? "" : "lg:w-96"}`}>
+      <div
+        className={`card bg-base-100 w-full ${list ? "" : "lg:w-96"} shadow-sm`}
+      >
+        <div className="card-body">
+          <div className="card-title line-clamp-1">{title}</div>
+          <p className="line-clamp-3">{content}</p>
 
-        <div className="card-actions justify-end">
-          <div className="flex items-center">
-            {liked ? <FaHeart /> : <FaRegHeart />}
-            <h2>{renderNum(likes)}</h2>
-          </div>
-          <div className="ml-3 flex items-center">
-            {<FaRegCommentAlt />}
-            <h2>{renderNum(comments)}</h2>
+          <div className="card-actions justify-end">
+            <div className="flex items-center">
+              {liked ? <FaHeart /> : <FaRegHeart />}
+              <h2>{renderNum(likes)}</h2>
+            </div>
+            <div className="ml-3 flex items-center">
+              {<FaRegCommentAlt />}
+              <h2>{renderNum(comments)}</h2>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

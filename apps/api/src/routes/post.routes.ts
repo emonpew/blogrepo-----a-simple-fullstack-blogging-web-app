@@ -14,7 +14,7 @@ import { authenticate } from "../middleware/auth.middleware";
 const router = Router();
 
 router.get("/", getAllPost);
-router.get("/:id", getPost);
+router.get("/:slug", getPost);
 router.post(
   "/",
   authenticate,

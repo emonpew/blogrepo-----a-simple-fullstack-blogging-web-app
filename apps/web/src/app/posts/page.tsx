@@ -80,6 +80,7 @@ export default async function PostsPage({ searchParams }: PageProps) {
             {posts.map((post) => (
               <PostCard
                 key={post.id}
+                href={`/posts/${post.slug}`}
                 title={post.title}
                 comments={post._count.comments}
                 likes={post._count.likes}

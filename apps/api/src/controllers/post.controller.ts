@@ -96,18 +96,25 @@ export const getAllPost = async (req: Request, res: Response) => {
 export const getPost = async (req: Request, res: Response) => {
   try {
     const params = req.params;
-    const id = Number(params.id);
+    const slug = params.slug;
 
-    const post = await prisma.post.findUnique({ where: { id } });
+    const post = await prisma.post.findUnique({
+      where: { slug },
+      include: {
+        author: { select: { username: true, id: true } },
+        comments: {
+          select: {
+            author: { select: { id: true, username: true } },
+            content: true,
+            createdAt: true,
+          },
+        },
+      },
+    });
     if (!post) {
       return ResponseService.notFound(res, "post");
     }
-    return res.status(200).json({
-      title: post.title,
-      slug: post.slug,
-      content: post.content,
-      authorId: post.authorId,
-    });
+    return res.status(200).json(post);
   } catch (error: any) {
     return ResponseService.internalServerError(res);
   }

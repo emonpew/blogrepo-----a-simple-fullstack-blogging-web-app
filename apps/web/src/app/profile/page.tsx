@@ -53,6 +53,7 @@ export default function page() {
         <div className="divider"></div>
         <div className="flex flex-col gap-2 max-h-96 overflow-auto">
           <PostCard
+            href={"#"}
             list
             title="Post title"
             content={lorem}
@@ -60,6 +61,7 @@ export default function page() {
             comments={100}
           />
           <PostCard
+            href={"#"}
             list
             title="Post title"
             content={lorem}
@@ -67,6 +69,7 @@ export default function page() {
             comments={100}
           />{" "}
           <PostCard
+            href={"#"}
             list
             title="Post title"
             content={lorem}
@@ -74,6 +77,7 @@ export default function page() {
             comments={100}
           />{" "}
           <PostCard
+            href={"#"}
             list
             title="Post title"
             content={lorem}
@@ -81,6 +85,7 @@ export default function page() {
             comments={100}
           />{" "}
           <PostCard
+            href={"#"}
             list
             title="Post title"
             content={lorem}
@@ -88,6 +93,7 @@ export default function page() {
             comments={100}
           />{" "}
           <PostCard
+            href={"#"}
             list
             title="Post title"
             content={lorem}
